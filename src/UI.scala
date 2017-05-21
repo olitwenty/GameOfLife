@@ -3,7 +3,8 @@ import scala.swing._
 /**
   * Created by Oliver on 19.05.2017.
   */
-class UI extends MainFrame {
+class UI(w: World) extends MainFrame {
   title = "Game of Life"
-  contents = new Canvas(new World)
+  val canvas = new Canvas(w)
+  contents = canvas
 }
