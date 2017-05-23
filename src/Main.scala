@@ -6,10 +6,20 @@ object Main {
   def main(args: Array[String]){
     val world = new World
     val ui = new UI(world)
-    ui.visible = true
-    Thread.sleep(5000)
-    world.populate()
-    ui.canvas.repaint()
-    println("exit")
+
+    while(true){
+      Thread.sleep(100)
+      if(world.singlestep){
+        allgenerations()
+      }
+    }
+
+    def allgenerations(): Unit ={
+      while(world.singlestep) {
+        world.nextGen()
+        ui.canvas.repaint()
+        Thread.sleep(1000)
+      }
+    }
   }
 }
