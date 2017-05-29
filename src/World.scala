@@ -1,3 +1,9 @@
+import akka.actor.{ActorSystem, Props}
+import akka.pattern.{FutureRef, ask}
+import akka.util.Timeout
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import scala.util.Random
 
 /**
@@ -6,10 +12,24 @@ import scala.util.Random
 class World {
   val width = 100
   val height = 100
-  val cellsize = 9
+  val cellsize = 5
   var singlestep = false
+  var timeser: Long = 0
+  var timepar: Long = 0
 
   var world = Array.ofDim[Boolean](width, height)
+
+  val system = ActorSystem("GenerationSystem")
+  val one = system.actorOf(Props[NextGenActor], name = "one")
+  val two = system.actorOf(Props[NextGenActor], name = "two")
+  val three = system.actorOf(Props[NextGenActor], name = "three")
+
+  val mes1 = new actormessage
+  val mes2 = new actormessage
+  val mes3 = new actormessage
+  val mes4 = new actormessage
+
+  implicit val timeout = new Timeout(Duration.create(1, "seconds"))
 
   populate()
 
@@ -124,8 +144,10 @@ class World {
   }
 
   def nextGen(): Unit ={
+    val t1 = System.nanoTime()
     val nextGeneration = Array.ofDim[Boolean](width, height)
     for(i <- 0 to width -1; j <- 0 to height - 1){
+
       val n = countneighbours(i, j)
       if(world(i)(j)){
         n match {
@@ -145,7 +167,59 @@ class World {
       }
     }
     world = nextGeneration
+    timeser = (System.nanoTime() - t1)/1000
   }
+
+  /*def nextGenParallel(): Unit ={
+    val t1 = System.nanoTime()
+    val nextGeneration = Array.ofDim[Boolean](width, height)
+
+    for(i <- 0 to width -1; j <- 0 to height - 1 by 4){
+
+      mes1.height = height
+      mes1.width = width
+      mes1.w = world
+      mes1.x = i
+      mes1.y = (j)
+
+      mes2.height = height
+      mes2.width = width
+      mes2.w = world
+      mes2.x = i
+      mes2.y = (j+1)
+
+      mes3.height = height
+      mes3.width = width
+      mes3.w = world
+      mes3.x = i
+      mes3.y = (j+2)
+
+      mes4.height = height
+      mes4.width = width
+      mes4.w = world
+      mes4.x = i
+      mes4.y = (j+3)
+
+      val f1 = one ? mes1
+      val f2 = two ? mes2
+      val f3 = three ? mes3
+      val f4 = three ? mes4
+
+      val result1 = Await.result(f1, timeout.duration)
+      val result2 = Await.result(f2, timeout.duration)
+      val result3 = Await.result(f3, timeout.duration)
+      val result4 = Await.result(f4, timeout.duration)
+
+      nextGeneration(i)(j) = result1.asInstanceOf[Boolean]
+      nextGeneration(i)(j+1) = result2.asInstanceOf[Boolean]
+      nextGeneration(i)(j+2) = result3.asInstanceOf[Boolean]
+      nextGeneration(i)(j+3) = result4.asInstanceOf[Boolean]
+
+
+    }
+    world = nextGeneration
+    timeser = (System.nanoTime() - t1)/1000
+  }*/
 
   def singletrue(): Unit ={
     singlestep = true

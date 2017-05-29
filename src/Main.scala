@@ -17,8 +17,9 @@ object Main {
     def allgenerations(): Unit ={
       while(world.singlestep) {
         world.nextGen()
+        ui.labelser.text ="Serial: " + world.timeser + " Mikrosekunden"
         ui.canvas.repaint()
-        Thread.sleep(1000)
+        Thread.sleep(100)
       }
     }
   }
