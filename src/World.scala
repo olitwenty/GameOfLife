@@ -10,9 +10,9 @@ import scala.util.Random
   * Created by Oliver on 19.05.2017.
   */
 class World {
-  val width = 100
-  val height = 100
-  val cellsize = 5
+  val width = 50
+  val height = 50
+  val cellsize = 10
   var singlestep = false
   var timeser: Long = 0
   var timepar: Long = 0
@@ -227,5 +227,14 @@ class World {
 
   def singlefalse(): Unit ={
     singlestep = false
+  }
+
+  def setPoint(x: Int, y: Int): Unit ={
+    if(world(x)(y)){
+      world(x)(y) = false
+    }
+    else {
+      world(x)(y) = true
+    }
   }
 }

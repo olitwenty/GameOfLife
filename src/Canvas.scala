@@ -2,12 +2,21 @@ import java.awt.{Color, Graphics2D}
 import java.awt.geom._
 
 import scala.swing._
+import scala.swing.event.{Event, MouseClicked}
 
 /**
   * Created by Oliver on 19.05.2017.
   */
 class Canvas(val w: World) extends Component {
   preferredSize = new Dimension(w.cellsize * w.width, w.cellsize * w.height)
+
+  var lastX: Int = 0
+  var lasty: Int = 0
+
+  listenTo(mouse.clicks)
+  reactions += {
+    case MouseClicked(_, p, _, _, _) => Click(p.x, p.y)
+  }
 
   override def paintComponent(g: Graphics2D): Unit = {
     val d = size
@@ -33,5 +42,15 @@ class Canvas(val w: World) extends Component {
         g.fillRect(i * w.cellsize + 1, j * w.cellsize + 1, w.cellsize - 1, w.cellsize - 1)
       }
     }
+  }
+
+  def Click(x: Int, y: Int) {
+    val cellx = x/w.cellsize
+    val celly = y/w.cellsize
+    lastX = cellx +1
+    lasty = celly +1
+    w.setPoint(cellx, celly)
+    repaint()
+    publish(ClickEvent(lastX, lasty))
   }
 }

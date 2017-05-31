@@ -15,16 +15,19 @@ class UI(w: World) extends MainFrame {
   val buttonende = Button("Exit") {sys.exit()}
   val labelser = new Label("Serial: -")
   val labelpar = new Label("Parallel: -")
+  val labelMousePos = new Label("Mouse: -")
   contents = new BoxPanel(Orientation.Vertical){
     contents += canvas
-    /*contents += new BoxPanel(Orientation.Horizontal){
-      contents += labelser
+    contents += new BoxPanel(Orientation.Horizontal){
+      /*contents += labelser
       contents += Swing.HGlue
       contents += labelpar
+      contents += Swing.HGlue*/
+      contents += labelMousePos
       contents += Swing.HGlue
 
       border = Swing.EmptyBorder(10, 10, 10, 10)
-    }*/
+    }
     contents += new BoxPanel(Orientation.Horizontal){
       contents += buttonstart
       contents += Swing.HGlue
@@ -49,6 +52,11 @@ class UI(w: World) extends MainFrame {
   def brepopulate(): Unit ={
     w.populate()
     canvas.repaint()
+  }
+
+  listenTo(canvas)
+  reactions += {
+    case ClickEvent(x, y) => labelMousePos.text = "Mouse: " + x + ", " + y
   }
 }
 
